@@ -85,15 +85,6 @@ limitations under the License.
 {{- $_ := set .Values.conf.cloudkitty.DEFAULT "os_project_domain_name" .Values.endpoints.identity.auth.cloudkitty.user_domain_name }}
 {{- end -}}
 
-{{- if empty .Values.conf.cloudkitty.taskflow.connection -}}
-{{- $connection := tuple "oslo_db" "internal" "cloudkitty" "mysql" . | include "helm-toolkit.endpoints.authenticated_endpoint_uri_lookup" -}}
-{{- if .Values.manifests.certificates -}}
-{{- $_ := (printf "%s?charset=utf8&ssl_ca=/etc/mysql/certs/ca.crt&ssl_key=/etc/mysql/certs/tls.key&ssl_cert=/etc/mysql/certs/tls.crt&ssl_verify_cert" $connection ) | set .Values.conf.cloudkitty.database "connection" -}}
-{{- else -}}
-{{- $_ := set .Values.conf.cloudkitty.taskflow "connection" $connection -}}
-{{- end -}}
-{{- end -}}
-
 ---
 apiVersion: v1
 kind: Secret
