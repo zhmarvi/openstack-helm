@@ -14,7 +14,7 @@
 images:
   tags:
     db_init: quay.io/airshipit/heat:2024.1-ubuntu_jammy
-    db_sync: docker.io/openstackhelm/cloudkitty:2024.1-ubuntu_jammy
+    db_sync: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.1
     db_drop: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     ks_endpoints: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     ks_service: quay.io/airshipit/heat:2024.1-ubuntu_jammy

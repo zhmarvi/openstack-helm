@@ -16,5 +16,5 @@ limitations under the License.
 
 exec -ex
 
-cloudkitty-storage-init
 cloudkitty-dbsync upgrade
+cloudkitty-storage-init
