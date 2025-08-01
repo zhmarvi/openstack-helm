@@ -60,6 +60,8 @@ spec:
 {{ tuple "nova_api_osapi" . | include "helm-toolkit.snippets.custom_pod_annotations" | indent 8 }}
 {{ dict "envAll" $envAll "podName" "nova-api-osapi" "containerNames" (list "nova-osapi" "init") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
     spec:
+{{ tuple "nova_api_osapi" . | include "helm-toolkit.snippets.kubernetes_pod_priority_class" | indent 6 }}
+{{ tuple "nova_api_osapi" . | include "helm-toolkit.snippets.kubernetes_pod_runtime_class" | indent 6 }}
       serviceAccountName: {{ $serviceAccountName }}
 {{ dict "envAll" $envAll "application" "nova" | include "helm-toolkit.snippets.kubernetes_pod_security_context" | indent 6 }}
       affinity:
@@ -108,6 +110,9 @@ spec:
             - name: nova-etc
               mountPath: /etc/nova/nova.conf
               subPath: nova.conf
+              readOnly: true
+            - name: nova-etc-snippets
+              mountPath: /etc/nova/nova.conf.d/
               readOnly: true
             - name: nova-etc
               mountPath: /etc/nova/nova-api-uwsgi.ini
@@ -164,6 +169,11 @@ spec:
           secret:
             secretName: nova-etc
             defaultMode: 0444
+        - name: nova-etc-snippets
+          projected:
+            sources:
+              - secret:
+                  name: nova-ks-etc
 {{- dict "enabled" .Values.manifests.certificates "name" .Values.endpoints.oslo_db.auth.admin.secret.tls.internal | include "helm-toolkit.snippets.tls_volume" | indent 8 }}
 {{- dict "enabled" (or .Values.manifests.certificates .Values.tls.identity) "name" .Values.secrets.tls.compute.osapi.internal | include "helm-toolkit.snippets.tls_volume" | indent 8 }}
 {{- dict "enabled" $envAll.Values.manifests.certificates "name" $envAll.Values.endpoints.oslo_messaging.auth.admin.secret.tls.internal | include "helm-toolkit.snippets.tls_volume" | indent 8 }}

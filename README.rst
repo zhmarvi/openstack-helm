@@ -23,10 +23,6 @@ that are tested and proved to work.
      - Host OS
      - Image OS
      - Kubernetes version
-   * - 2023.2 (Bobcat)
-     - Ubuntu Jammy
-     - Ubuntu Jammy
-     - >=1.29,<=1.31
    * - 2024.1 (Caracal)
      - Ubuntu Jammy
      - Ubuntu Jammy
@@ -34,6 +30,14 @@ that are tested and proved to work.
    * - 2024.2 (Dalmatian)
      - Ubuntu Jammy
      - Ubuntu Jammy
+     - >=1.29,<=1.31
+   * - 2025.1 (Epoxy)
+     - Ubuntu Jammy
+     - Ubuntu Jammy
+     - >=1.29,<=1.31
+   * - 2025.1 (Epoxy)
+     - Ubuntu Noble
+     - Ubuntu Noble
      - >=1.29,<=1.31
 
 Communication
@@ -104,5 +108,5 @@ If you update multiple charts in a single commit use the following command:
 This will create a new release note file ``releasenotes/notes/common-<sha>.yaml``. In this case you
 can add multiple chart specific sections in this release note file.
 
-When building tarballы, we will use the ``reno`` features to combine release notes from all files and
+When building tarballs, we will use the ``reno`` features to combine release notes from all files and
 generate  ``<chart_name>/CHANGELOG.md`` files.

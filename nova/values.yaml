@@ -1470,6 +1470,7 @@ conf:
       auth_type: password
       auth_version: v3
     cinder:
+      auth_type: password
       catalog_info: volumev3::internalURL
     database:
       max_retries: -1
@@ -1641,6 +1642,11 @@ secrets:
   identity:
     admin: nova-keystone-admin
     nova: nova-keystone-user
+    neutron: nova-keystone-neutron
+    placement: nova-keystone-placement
+    cinder: nova-keystone-cinder
+    ironic: nova-keystone-ironic
+    service: nova-keystone-service
     test: nova-keystone-test
   oslo_db:
     admin: nova-db-admin
@@ -1824,30 +1830,40 @@ endpoints:
         project_name: service
         user_domain_name: service
         project_domain_name: service
+      service:
+        role: admin,service
+        region_name: RegionOne
+        username: nova_service_user
+        password: password
+        project_name: service
+        user_domain_name: service
+        project_domain_name: service
       # NOTE(portdirect): the neutron user is not managed by the nova chart
       # these values should match those set in the neutron chart.
       neutron:
+        role: admin,service
         region_name: RegionOne
         project_name: service
         user_domain_name: service
         project_domain_name: service
-        username: neutron
+        username: nova_neutron
         password: password
       # NOTE(portdirect): the ironic user is not managed by the nova chart
       # these values should match those set in the ironic chart.
       ironic:
+        role: admin,service
         auth_type: password
         auth_version: v3
         region_name: RegionOne
         project_name: service
         user_domain_name: service
         project_domain_name: service
-        username: ironic
+        username: nova_ironic
         password: password
       placement:
-        role: admin
+        role: admin,service
         region_name: RegionOne
-        username: placement
+        username: nova_placement
         password: password
         project_name: service
         user_domain_name: service
@@ -1855,7 +1871,7 @@ endpoints:
       cinder:
         role: admin,service
         region_name: RegionOne
-        username: cinder
+        username: nova_cinder
         password: password
         project_name: service
         user_domain_name: service
@@ -1895,6 +1911,22 @@ endpoints:
     port:
       api:
         default: 9292
+        public: 80
+  volumev3:
+    name: cinderv3
+    hosts:
+      default: cinder-api
+      public: cinder
+    host_fqdn_override:
+      default: null
+    path:
+      default: '/v3/%(tenant_id)s'
+      healthcheck: /healthcheck
+    scheme:
+      default: http
+    port:
+      api:
+        default: 8776
         public: 80
   compute:
     name: nova
@@ -2682,6 +2714,7 @@ manifests:
   secret_db: true
   secret_ingress_tls: true
   secret_keystone: true
+  secret_ks_etc: true
   secret_rabbitmq: true
   secret_registry: true
   service_ingress_metadata: true
