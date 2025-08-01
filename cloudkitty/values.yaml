@@ -493,6 +493,23 @@ conf:
     filter:http_proxy_to_wsgi:
       paste.filter_factory: oslo_middleware.http_proxy_to_wsgi:HTTPProxyToWSGI.factory
       oslo_config_project: cloudkitty
+  cloudkitty_api_uwsgi:
+    uwsgi:
+      add-header: "Connection: close"
+      buffer-size: 65535
+      die-on-term: true
+      enable-threads: true
+      exit-on-reload: false
+      hook-master-start: unix_signal:15 gracefully_kill_them_all
+      lazy-apps: true
+      log-x-forwarded-for: true
+      master: true
+      procname-prefix-spaced: "cloudkitty-api:"
+      route-user-agent: '^kube-probe.* donotlog:'
+      thunder-lock: true
+      worker-reload-mercy: 80
+      wsgi-file: /var/lib/openstack/bin/cloudkitty-api
+      processes: 1
   cloudkitty:
     DEFAULT:
       api_paste_config: /etc/cloudkitty/api-paste.ini

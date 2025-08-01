@@ -103,6 +103,9 @@ spec:
             - name: cloudkitty-etc
               mountPath: /etc/cloudkitty/api-paste.ini
               subPath: api-paste.ini
+            - name: cloudkitty-etc
+              mountPath: /etc/cloudkitty/cloudkitty-api-uwsgi.ini
+              subPath: cloudkitty-api-uwsgi.ini
       volumes:
         - name: pod-tmp
           emptyDir: {}
