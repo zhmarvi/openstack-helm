@@ -571,5 +571,4 @@ manifests:
   job_rabbit_init: true
   service_api: true
   pdb_api: true
-  #cloudkitty-processor: true
 ...
