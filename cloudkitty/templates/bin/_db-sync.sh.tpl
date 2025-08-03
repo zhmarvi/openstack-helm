@@ -17,11 +17,3 @@ limitations under the License.
 set -ex
 
 cloudkitty-dbsync upgrade
-
-{{- $kek := (index (index .Values.conf.cloudkitty "simple_crypto_plugin" | default dict) "kek") | default "" }}
-{{- $old_kek := index .Values.conf.simple_crypto_kek_rewrap "old_kek" | default ""}}
-{{- if and (not (empty $old_kek)) (not (empty $kek)) }}
-set +x
-echo "Ensuring that project KEKs are wrapped with the target global KEK"
-/tmp/simple_crypto_kek_rewrap.py --old-keks="$(cat /tmp/old_keks)"
-{{- end }}

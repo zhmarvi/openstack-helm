@@ -12,16 +12,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */}}
 
-{{- if .Values.manifests.job_db_sync }}
+{{- if .Values.manifests.job_storage_init }}
 {{- $envAll := . }}
 
-{{- $serviceAccountName := "cloudkitty-db-sync" }}
-{{ tuple $envAll "db_sync" $serviceAccountName | include "helm-toolkit.snippets.kubernetes_pod_rbac_serviceaccount" }}
+{{- $serviceAccountName := "cloudkitty-storage-init" }}
+{{ tuple $envAll "storage_init" $serviceAccountName | include "helm-toolkit.snippets.kubernetes_pod_rbac_serviceaccount" }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: cloudkitty-db-sync
+  name: cloudkitty-storage-init
   annotations:
     {{ tuple $envAll | include "helm-toolkit.snippets.release_uuid" }}
 {{- if .Values.helm3_hook }}
@@ -41,20 +41,20 @@ spec:
       nodeSelector:
         {{ .Values.labels.job.node_selector_key }}: {{ .Values.labels.job.node_selector_value }}
       initContainers:
-{{ tuple $envAll "db_migrate" list | include "helm-toolkit.snippets.kubernetes_entrypoint_init_container" | indent 8 }}
+{{ tuple $envAll "storage_init" list | include "helm-toolkit.snippets.kubernetes_entrypoint_init_container" | indent 8 }}
       containers:
-        - name: cloudkitty-db-sync
-{{ tuple $envAll "db_sync" | include "helm-toolkit.snippets.image" | indent 10 }}
-{{ tuple $envAll $envAll.Values.pod.resources.jobs.db_sync | include "helm-toolkit.snippets.kubernetes_resources" | indent 10 }}
-{{ dict "envAll" $envAll "application" "cloudkitty" "container" "cloudkitty_db_migrate" | include "helm-toolkit.snippets.kubernetes_container_security_context" | indent 10 }}
+        - name: cloudkitty-storage-init
+{{ tuple $envAll "storage_init" | include "helm-toolkit.snippets.image" | indent 10 }}
+{{ tuple $envAll $envAll.Values.pod.resources.jobs.storage_init | include "helm-toolkit.snippets.kubernetes_resources" | indent 10 }}
+{{ dict "envAll" $envAll "application" "cloudkitty" "container" "cloudkitty_storage_init" | include "helm-toolkit.snippets.kubernetes_container_security_context" | indent 10 }}
           command:
-            - /tmp/db-sync.sh
+            - /tmp/storage-init.sh
           volumeMounts:
             - name: pod-tmp
               mountPath: /tmp
             - name: cloudkitty-bin
-              mountPath: /tmp/db-sync.sh
-              subPath: db-sync.sh
+              mountPath: /tmp/storage-init.sh
+              subPath: storage-init.sh
             - name: etccloudkitty
               mountPath: /etc/cloudkitty
             - name: cloudkitty-etc

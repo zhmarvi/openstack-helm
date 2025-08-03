@@ -14,13 +14,14 @@
 images:
   tags:
     db_init: quay.io/airshipit/heat:2024.1-ubuntu_jammy
-    db_sync: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.1
+    db_sync: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2
     db_drop: quay.io/airshipit/heat:2024.1-ubuntu_jammy
+    storage_init: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2
     ks_endpoints: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     ks_service: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     ks_user: quay.io/airshipit/heat:2024.1-ubuntu_jammy
-    cloudkitty_api: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.1 
-    cloudkitty_processor: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.1
+    cloudkitty_api: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2 
+    cloudkitty_processor: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2
     rabbit_init: docker.io/rabbitmq:3.13-management
     dep_check: quay.io/airshipit/kubernetes-entrypoint:latest-ubuntu_focal
   pull_policy: "IfNotPresent"
@@ -246,6 +247,7 @@ dependencies:
     cloudkitty_api:
       jobs:
         - cloudkitty-db-sync
+        - cloudkitty-storage-init
         - cloudkitty-ks-user
         - cloudkitty-ks-endpoints
         - cloudkitty-ks-service
@@ -255,6 +257,7 @@ dependencies:
     cloudkitty_processor:
       jobs:
         - cloudkitty-db-sync
+        - cloudkitty-storage-init
         - cloudkitty-ks-user
         - cloudkitty-ks-endpoints
         - cloudkitty-ks-service
@@ -269,6 +272,12 @@ dependencies:
       jobs:
         - cloudkitty-db-init
       services:
+        - endpoint: internal
+          service: oslo_db
+    storage_init:
+      jobs:
+        - cloudkitty-db-sync
+      servcies:
         - endpoint: internal
           service: oslo_db
     ks_endpoints:
@@ -442,6 +451,13 @@ pod:
         limits:
           memory: "1024Mi"
           cpu: "2000m"
+      storage_init:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "1024Mi"
+          cpu: "2000m"
       db_drop:
         requests:
           memory: "128Mi"
@@ -541,6 +557,93 @@ conf:
   cloudkitty_sudoers: |
     Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin:/var/lib/openstack/bin"
     cloudkitty ALL=(ALL:ALL) NOPASSWD: /var/lib/openstack/bin/privsep-helper
+  processor_metrics: |
+    metrics:
+      cpu:
+        alt_name: instance
+        extra_args:
+          aggregation_method: mean
+          resource_type: instance
+        groupby:
+          - id
+          - user_id
+          - project_id
+        metadata:
+          - flavor_name
+          - flavor_id
+          - vcpus
+        mutate: NUMBOOL
+        unit: instance
+      image.size:
+        extra_args:
+          aggregation_method: mean
+          resource_type: image
+        factor: 1/1048576
+        groupby:
+          - id
+          - user_id
+          - project_id
+        metadata:
+          - container_format
+          - disk_format
+        unit: MiB
+      ip.floating:
+        extra_args:
+          aggregation_method: mean
+          resource_type: network
+        groupby:
+          - id
+          - user_id
+          - project_id
+        metadata:
+          - state
+        mutate: NUMBOOL
+        unit: ip
+      network.incoming.bytes.rate:
+        extra_args:
+          aggregation_method: mean
+          resource_type: instance_network_interface
+        factor: 3600/1000000
+        groupby:
+          - id
+          - project_id
+          - user_id
+        metadata:
+          - instance_id
+        unit: MB
+      network.outgoing.bytes.rate:
+        extra_args:
+          aggregation_method: mean
+          resource_type: instance_network_interface
+        factor: 3600/1000000
+        groupby:
+          - id
+          - project_id
+          - user_id
+        metadata:
+          - instance_id
+        unit: MB
+      radosgw.objects.size:
+        extra_args:
+          aggregation_method: mean
+          resource_type: ceph_account
+        factor: 1/1073741824
+        groupby:
+          - id
+          - user_id
+          - project_id
+        unit: GiB
+      volume.size:
+        extra_args:
+          aggregation_method: mean
+          resource_type: volume
+        groupby:
+          - id
+          - user_id
+          - project_id
+        metadata:
+          - volume_type
+        unit: GiB
 
 # Note(xuxant): Hooks will break the upgrade for helm2
 # Set to false if using helm2.
@@ -560,6 +663,7 @@ manifests:
   job_db_drop: false
   job_ks_endpoints: true
   job_ks_service: true
+  job_storage_init: true
   deployment_api: true
   deployment_processor: true
   configmap_bin: true

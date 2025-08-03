@@ -81,6 +81,9 @@ spec:
             - name: cloudkitty-etc
               mountPath: /etc/cloudkitty/cloudkitty.conf
               subPath: cloudkitty.conf
+            - name: cloudkitty-etc
+              mountPath: /etc/cloudkitty/metrics.yml
+              subPath: metrics.yml
 {{ if $mounts_cloudkitty_processor.volumeMounts }}{{ toYaml $mounts_cloudkitty_processor.volumeMounts | indent 12 }}{{ end }}
       volumes:
         - name: pod-tmp
