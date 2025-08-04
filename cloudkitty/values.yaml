@@ -13,6 +13,7 @@
 ---
 images:
   tags:
+    bootstrap: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     db_init: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     db_sync: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2
     db_drop: quay.io/airshipit/heat:2024.1-ubuntu_jammy
@@ -24,6 +25,7 @@ images:
     cloudkitty_processor: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2
     rabbit_init: docker.io/rabbitmq:3.13-management
     dep_check: quay.io/airshipit/kubernetes-entrypoint:latest-ubuntu_focal
+    image_repo_sync: docker.io/docker:17.07.0
   pull_policy: "IfNotPresent"
   local_registry:
     active: false
@@ -242,7 +244,22 @@ secrets:
   oci_image_registry:
     cloudkitty: cloudkitty-oci-image-registry
 
+bootstrap:
+  enabled: false
+  ks_user: cloudkitty
+  script: |
+    openstack token issue
+
 dependencies:
+  dynamic:
+    common:
+      local_image_registry:
+        jobs:
+          - cloudkitty-image-repo-sync
+        services:
+          - endpoint: node
+            service: local_image_registry
+
   static:
     cloudkitty_api:
       jobs:
@@ -294,6 +311,14 @@ dependencies:
       services:
         - endpoint: internal
           service: identity
+    rabbit_init:
+      services:
+        - service: oslo_messaging
+          endpoint: internal
+    image_repo_sync:
+      services:
+        - endpoint: internal
+          service: local_image_registry
 
 pod:
   security_context:
@@ -430,6 +455,13 @@ pod:
         memory: "1024Mi"
         cpu: "2000m"
     jobs:
+      bootstrap:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "1024Mi"
+          cpu: "2000m"
       rabbit_init:
         requests:
           memory: "128Mi"
@@ -480,6 +512,13 @@ pod:
           memory: "1024Mi"
           cpu: "2000m"
       ks_user:
+        requests:
+          memory: "128Mi"
+          cpu: "100m"
+        limits:
+          memory: "1024Mi"
+          cpu: "2000m"
+      image_repo_sync:
         requests:
           memory: "128Mi"
           cpu: "100m"
@@ -650,29 +689,60 @@ conf:
 helm3_hook: true
 
 network:
-  cloudkitty_api:
+  api:
+    ingress:
+      public: true
+      classes:
+        namespace: "nginx"
+        cluster: "nginx-cluster"
+      annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
     node_port:
       enabled: false
       port: 33053
-    external_policy_local: false
+
+network_policy:
+  watcher:
+    ingress:
+      - from:
+        - podSelector:
+            matchLabels:
+              application: cloudkitty
+        - podSelector:
+            matchLabels:
+              application: horizon
+        - podSelector:
+            matchLabels:
+              application: ingress
+        - podSelector:
+            matchLabels:
+              application: gnocchi
+        ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 8089
 
 manifests:
+  configmap_bin: true
+  configmap_etc: true
+  deployment_api: true
+  deployment_processor: true
+  ingress_api: true
+  job_bootstrap: true
   job_ks_user: true
   job_db_sync: true
   job_db_init: true
   job_db_drop: false
   job_ks_endpoints: true
   job_ks_service: true
+  job_rabbit_init: true
   job_storage_init: true
-  deployment_api: true
-  deployment_processor: true
-  configmap_bin: true
-  configmap_etc: true
+  pdb_api: true
+  network_policy: false
   secret_db: true
   secret_rabbitmq: true
   secret_keystone: true
   secret_registry: true
-  job_rabbit_init: true
   service_api: true
-  pdb_api: true
 ...

@@ -14,13 +14,20 @@ limitations under the License.
 
 {{- if .Values.manifests.configmap_bin }}
 {{- $envAll := . }}
-{{- $rallyTests := .Values.conf.rally_tests }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cloudkitty-bin
 data:
+{{- if .Values.images.local_registry.active }}
+  image-repo-sync.sh: |
+{{- include "helm-toolkit.scripts.image_repo_sync" . | indent 4 }}
+{{- end }}
+{{- if .Values.bootstrap.enabled }}
+  bootstrap.sh: |
+{{ tuple "bin/_bootstrap.sh.tpl" . | include "helm-toolkit.utils.template" | indent 4 }}
+{{- end }}
   cloudkitty-processor.sh: |
 {{ tuple "bin/_cloudkitty-processor.sh.tpl" . | include "helm-toolkit.utils.template" | indent 4 }}
   cloudkitty-api.sh: |

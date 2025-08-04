@@ -8,6 +8,7 @@ OpenStack charts options
     barbican
     ceilometer
     cinder
+    cloudkitty
     cyborg
     designate
     glance

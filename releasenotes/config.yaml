@@ -17,6 +17,7 @@ sections:
   - [ceph-mon, ceph-mon Chart]
   - [ceph-osd, ceph-osd Chart]
   - [ceph-provisioners, ceph-provisioners Chart]
+  - [cloudkitty, cloudkitty Chart]
   - [cinder, cinder Chart]
   - [daemonjob-controller, daemonjob-controller Chart]
   - [designate, designate Chart]

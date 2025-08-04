@@ -21,17 +21,14 @@ metadata:
   name: {{ tuple "rating" "internal" . | include "helm-toolkit.endpoints.hostname_short_endpoint_lookup" }}
 spec:
   ports:
-  - name: n-api
-    port: {{ tuple "rating" "internal" "api" . | include "helm-toolkit.endpoints.endpoint_port_lookup" }}
-    {{ if .Values.network.cloudkitty_api.node_port.enabled }}
-    nodePort: {{ .Values.network.cloudkitty_api.node_port.port }}
+    - name: n-api
+      port: {{ tuple "rating" "internal" "api" . | include "helm-toolkit.endpoints.endpoint_port_lookup" }}
+    {{ if .Values.network.api.node_port.enabled }}
+      nodePort: {{ .Values.network.api.node_port.port }}
     {{ end }}
   selector:
 {{ tuple $envAll "cloudkitty" "api" | include "helm-toolkit.snippets.kubernetes_metadata_labels" | indent 4 }}
-  {{ if .Values.network.cloudkitty_api.node_port.enabled }}
+  {{ if .Values.network.api.node_port.enabled }}
   type: NodePort
-  {{ if .Values.network.cloudkitty_api.external_policy_local }}
-  externalTrafficPolicy: Local
-  {{ end }}
   {{ end }}
 {{- end }}
