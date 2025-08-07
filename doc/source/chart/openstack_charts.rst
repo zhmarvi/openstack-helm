@@ -30,3 +30,4 @@ OpenStack charts options
     skyline
     tacker
     tempest
+    watcher

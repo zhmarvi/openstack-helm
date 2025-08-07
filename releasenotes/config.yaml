@@ -78,6 +78,7 @@ sections:
   - [registry, registry Chart]
   - [shaker, shaker Chart]
   - [tempest, tempest Chart]
+  - [watcher, watcher Chart]
   - [features, New Features]
   - [issues, Known Issues]
   - [upgrade, Upgrade Notes]

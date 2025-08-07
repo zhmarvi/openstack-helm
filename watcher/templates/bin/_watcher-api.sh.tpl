@@ -1,3 +1,5 @@
+#!/bin/bash
+
 {{/*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */}}
 
-{{- if .Values.manifests.pdb_cloudwatch }}
-{{- $envAll := . }}
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: heat-cloudwatch
-spec:
-  minAvailable: {{ .Values.pod.lifecycle.disruption_budget.cloudwatch.min_available }}
-  selector:
-    matchLabels:
-{{ tuple $envAll "heat" "cloudwatch" | include "helm-toolkit.snippets.kubernetes_metadata_labels" | indent 6 }}
-{{- end }}
+set -ex
+COMMAND="${@:-start}"
+
+function start () {
+  exec watcher-api \
+        --config-file /etc/watcher/watcher.conf
+}
+
+function stop () {
+  kill -TERM 1
+}
+
+$COMMAND

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 {{/*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */}}
 
-{{- if and .Values.manifests.ingress_cloudwatch .Values.network.cloudwatch.ingress.public }}
-{{- $ingressOpts := dict "envAll" . "backendService" "cloudwatch" "backendServiceType" "cloudwatch" "backendPort" "h-cwh" -}}
-{{ $ingressOpts | include "helm-toolkit.manifests.ingress" }}
-{{- end }}
+set -ex
+exec watcher-applier \
+      --config-file /etc/watcher/watcher.conf

@@ -12,23 +12,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */}}
 
-{{- if .Values.manifests.service_cloudwatch }}
+{{- if .Values.manifests.service_api }}
 {{- $envAll := . }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ tuple "cloudwatch" "internal" . | include "helm-toolkit.endpoints.hostname_short_endpoint_lookup" }}
+  name: {{ tuple "infra-optim" "internal" . | include "helm-toolkit.endpoints.hostname_short_endpoint_lookup" }}
 spec:
   ports:
-    - name: h-cwh
-      port: {{ tuple "cloudwatch" "service" "api" . | include "helm-toolkit.endpoints.endpoint_port_lookup" }}
-    {{ if .Values.network.cloudwatch.node_port.enabled }}
-      nodePort: {{ .Values.network.cloudwatch.node_port.port }}
+    - name: w-api
+      port: {{ tuple "infra-optim" "internal" "api" . | include "helm-toolkit.endpoints.endpoint_port_lookup" }}
+    {{ if .Values.network.api.node_port.enabled }}
+      nodePort: {{ .Values.network.api.node_port.port }}
     {{ end }}
   selector:
-{{ tuple $envAll "heat" "cloudwatch" | include "helm-toolkit.snippets.kubernetes_metadata_labels" | indent 4 }}
-  {{ if .Values.network.cloudwatch.node_port.enabled }}
+{{ tuple $envAll "watcher" "api" | include "helm-toolkit.snippets.kubernetes_metadata_labels" | indent 4 }}
+  {{ if .Values.network.api.node_port.enabled }}
   type: NodePort
   {{ end }}
 {{- end }}

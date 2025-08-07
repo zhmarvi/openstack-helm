@@ -12,7 +12,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */}}
 
-{{- if and .Values.manifests.service_ingress_cloudwatch .Values.network.cloudwatch.ingress.public }}
-{{- $serviceIngressOpts := dict "envAll" . "backendServiceType" "cloudwatch" -}}
-{{ $serviceIngressOpts | include "helm-toolkit.manifests.service_ingress" }}
+{{- if .Values.manifests.job_ks_service }}
+{{- $ksServiceJob := dict "envAll" . "serviceName" "watcher" "serviceTypes" ( tuple "infra-optim" ) -}}
+{{ $ksServiceJob | include "helm-toolkit.manifests.job_ks_service" }}
 {{- end }}
