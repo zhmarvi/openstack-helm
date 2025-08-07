@@ -102,6 +102,7 @@ metadata:
   name: {{ $configMapName }}
 type: Opaque
 data:
+  rally_tests.yaml: {{ toYaml .Values.conf.rally_tests | b64enc }}
   cloudkitty.conf: {{ include "helm-toolkit.utils.to_oslo_conf" .Values.conf.cloudkitty | b64enc }}
   api-paste.ini: {{ include "helm-toolkit.utils.to_oslo_conf" .Values.conf.paste | b64enc }}
   metrics.yml: {{ $envAll.Values.conf.processor_metrics | b64enc }}

@@ -13,6 +13,7 @@
 ---
 images:
   tags:
+    test: docker.io/xrally/xrally-openstack:3.0.0
     bootstrap: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     db_init: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     db_sync: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2
@@ -384,6 +385,16 @@ pod:
         default: kubernetes.io/hostname
       weight:
         default: 10
+  tolerations:
+    cloudkitty:
+      enabled: false
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
   replicas:
     cloudkitty_api: 1
     cloudkitty_processor: 1
@@ -436,6 +447,11 @@ pod:
         volumes:
     cloudkitty_ks_service:
       cloudkitty_db_sync:
+        volumeMounts:
+        volumes:
+    cloudkitty_tests:
+      init_container: null
+      cloudkitty_tests:
         volumeMounts:
         volumes:
   resources:
@@ -683,6 +699,7 @@ conf:
         metadata:
           - volume_type
         unit: GiB
+  rally_tests: {}
 
 # Note(xuxant): Hooks will break the upgrade for helm2
 # Set to false if using helm2.
@@ -740,6 +757,7 @@ manifests:
   job_storage_init: true
   pdb_api: true
   network_policy: false
+  pod_rally_test: true
   secret_db: true
   secret_rabbitmq: true
   secret_keystone: true
