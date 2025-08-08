@@ -525,7 +525,7 @@ conf:
     filter:request_id:
       paste.filter_factory: oslo_middleware:RequestId.factory
     filter:cors:
-      paste.filter_factory:  oslo_middleware.cors:filter_factory
+      paste.filter_factory: oslo_middleware.cors:filter_factory
       oslo_config_project: cloudkitty
     filter:healthcheck:
       paste.filter_factory: oslo_middleware:Healthcheck.factory
@@ -555,11 +555,11 @@ conf:
     DEFAULT:
       api_paste_config: /etc/cloudkitty/api-paste.ini
       auth_strategy: keystone
-      debug: False
+      debug: false
     keystone_authtoken:
       auth_type: password
       username: cloudkitty
-      service_token_roles_required: True
+      service_token_roles_required: true
       service_token_roles: admin,rating,service
       service_type: rating
     database:

@@ -11,3 +11,4 @@ images:
     cloudkitty_db_sync: quay.io/airshipit/cloudkitty:2025.1-ubuntu_jammy
     cloudkitty_processor: quay.io/airshipit/cloudkitty:2025.1-ubuntu_jammy
     cloudkitty_storage_init: quay.io/airshipit/cloudkitty:2025.1-ubuntu_jammy
+...
