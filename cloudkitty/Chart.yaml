@@ -16,7 +16,7 @@ appVersion: v1.0.0
 description: OpenStack-Helm Cloudkitty
 name: cloudkitty
 version: 2025.1.0
-home: https://docs.openstack.org/cloudkitty/latest/ 
+home: https://docs.openstack.org/cloudkitty/latest/
 icon: https://opendev.org/openstack/cloudkitty/media/branch/master/doc/source/images/cloudkitty-logo.png
 sources:
   - https://opendev.org/openstack/cloudkitty
