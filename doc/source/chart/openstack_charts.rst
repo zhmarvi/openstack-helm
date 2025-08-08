@@ -9,6 +9,7 @@ OpenStack charts options
     ceilometer
     cinder
     cyborg
+    cloudkitty
     designate
     glance
     heat
