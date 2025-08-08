@@ -17,14 +17,14 @@ set -xe
 #NOTE: Define variables
 : ${OSH_HELM_REPO:="../openstack-helm"}
 : ${OSH_VALUES_OVERRIDES_PATH:="../openstack-helm/values_overrides"}
-: ${OSH_EXTRA_HELM_ARGS_MANILA:="$(helm osh get-values-overrides ${DOWNLOAD_OVERRIDES:-}  -p ${OSH_VALUES_OVERRIDES_PATH} -c cloudkitty ${FEATURES})"}
+: ${OSH_EXTRA_HELM_ARGS_CLOUDKITTY:="$(helm osh get-values-overrides ${DOWNLOAD_OVERRIDES:-}  -p ${OSH_VALUES_OVERRIDES_PATH} -c cloudkitty ${FEATURES})"}
 : ${RUN_HELM_TESTS:="no"}
 
 #NOTE: Deploy command
-helm upgrade --install --debug cloudkitty ${OSH_HELM_REPO}/cloudkitty \
+helm upgrade --install cloudkitty ${OSH_HELM_REPO}/cloudkitty \
     --namespace=openstack \
     ${OSH_EXTRA_HELM_ARGS} \
-    ${OSH_EXTRA_HELM_ARGS_WATCHER}
+    ${OSH_EXTRA_HELM_ARGS_CLOUDKITTY}
 
 #NOTE: Wait for deploy
 helm osh wait-for-pods openstack 1800

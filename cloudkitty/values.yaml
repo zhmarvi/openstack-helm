@@ -14,17 +14,17 @@
 images:
   tags:
     bootstrap: quay.io/airshipit/heat:2024.1-ubuntu_jammy
+    cloudkitty_api: quay.io/airshipit/cloudkitty:2024.1-ubuntu_jammy
+    cloudkitty_db_sync: quay.io/airshipit/cloudkitty:2024.1-ubuntu_jammy
+    cloudkitty_processor: quay.io/airshipit/cloudkitty:2024.1-ubuntu_jammy
+    cloudkitty_storage_init: quay.io/airshipit/cloudkitty:2024.1-ubuntu_jammy
     db_init: quay.io/airshipit/heat:2024.1-ubuntu_jammy
-    db_sync: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2
     db_drop: quay.io/airshipit/heat:2024.1-ubuntu_jammy
-    storage_init: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2
+    dep_check: quay.io/airshipit/kubernetes-entrypoint:latest-ubuntu_focal
     ks_endpoints: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     ks_service: quay.io/airshipit/heat:2024.1-ubuntu_jammy
     ks_user: quay.io/airshipit/heat:2024.1-ubuntu_jammy
-    cloudkitty_api: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2 
-    cloudkitty_processor: kernelpanic53/rackerlabs-cloudkitty:zhmarvi-ubuntu_jammy_0.2
     rabbit_init: docker.io/rabbitmq:3.13-management
-    dep_check: quay.io/airshipit/kubernetes-entrypoint:latest-ubuntu_focal
     image_repo_sync: docker.io/docker:17.07.0
   pull_policy: "IfNotPresent"
   local_registry:
@@ -132,7 +132,7 @@ endpoints:
       test:
         role: admin
         region_name: RegionOne
-        username: neutron-test
+        username: test
         password: password
         project_name: test
         user_domain_name: service
@@ -346,36 +346,22 @@ pod:
           readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
   probes:
-    rpc_timeout: 60
-    rpc_retries: 2
     cloudkitty:
       default:
         liveness:
           enabled: true
-          params:
-            initialDelaySeconds: 120
-            periodSeconds: 90
-            timeoutSeconds: 70
+          params: {}
         readiness:
           enabled: true
-          params:
-            initialDelaySeconds: 80
-            periodSeconds: 90
-            timeoutSeconds: 70
+          params: {}
     cloudkitty-processor:
       default:
         liveness:
           enabled: true
-          params:
-            initialDelaySeconds: 30
-            periodSeconds: 60
-            timeoutSeconds: 15
+          params: {}
         readiness:
           enabled: true
-          params:
-            initialDelaySeconds: 30
-            periodSeconds: 60
-            timeoutSeconds: 15
+          params: {}
   affinity:
     anti:
       type:
@@ -702,7 +688,7 @@ network:
       port: 33053
 
 network_policy:
-  watcher:
+  cloudkitty:
     ingress:
       - from:
         - podSelector:
